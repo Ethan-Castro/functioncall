@@ -129,7 +129,7 @@ def run_full_turn(agent, messages):
         tool_schemas = [function_to_schema(tool) for tool in current_agent.tools]
         tools = {tool.__name__: tool for tool in current_agent.tools}
 
-        response = openai.ChatCompletion.create(
+        response = openai.chat.completions.create(
             model=current_agent.model,
             messages=[{"role": "system", "content": current_agent.instructions}] + messages,
             functions=tool_schemas or None,
