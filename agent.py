@@ -7,7 +7,8 @@ import inspect
 import numpy as np
 import io  # Needed to handle string-based CSV
 import os
-from flask import Flask, request, jsonify
+import streamlit as st
+from dotenv import load_dotenv
 
 # Load environment variables
 load_dotenv()
