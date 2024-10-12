@@ -1,4 +1,4 @@
-import openai as OpenAI
+import openai
 from pydantic import BaseModel
 from typing import Optional
 import json
