@@ -157,6 +157,7 @@ def run_full_turn(agent, messages):
     return Response(agent=current_agent.dict(), messages=messages[num_init_messages:])
 
 # Streamlit app
+# Streamlit app
 st.title("Math and Spreadsheet Analysis Agent")
 
 st.write("Welcome! You can ask me to perform calculations or analyze a spreadsheet (in CSV format).")
@@ -172,7 +173,18 @@ if uploaded_file is not None:
         operation = st.selectbox("Select an operation to perform on the spreadsheet", ["sum", "mean", "describe", "custom"])
         custom_function = None
         if operation == "custom":
-            custom_function = st.text_area("Enter your custom Python code to operate on the dataframe. Use 'df' to reference the dataframe and assign the result to 'result' variable.")
+            custom_function = None
+        if operation == "custom":
+            llm_prompt = "Generate Python code to perform the following operation on the given dataframe: " + st.text_input("Describe the analysis you want to perform on the dataframe:")
+            if llm_prompt:
+                llm_response = openai.ChatCompletion.create(
+                    model="gpt-4o",
+                    messages=[{"role": "user", "content": llm_prompt}],
+                    max_tokens=150
+                )
+                custom_function = llm_response.choices[0].message['content'].strip()
+                st.write("Generated code:")
+                st.code(custom_function, language='python')
         if st.button("Analyze Spreadsheet"):
             result = analyze_spreadsheet(operation, uploaded_file.getvalue().decode("utf-8"), custom_function)
             st.write(result)
