@@ -177,7 +177,7 @@ if uploaded_file is not None:
         if operation == "custom":
             llm_prompt = "Generate Python code to perform the following operation on the given dataframe: " + st.text_input("Describe the analysis you want to perform on the dataframe:")
             if llm_prompt:
-                llm_response = openai.ChatCompletion.create(
+                llm_response = openai.chat.completions.create(
                     model="gpt-4o",
                     messages=[{"role": "user", "content": llm_prompt}],
                     max_tokens=150
