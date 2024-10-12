@@ -96,8 +96,7 @@ def analyze_spreadsheet(operation: str, data: str):
         else:
             return f"Unsupported operation: {operation}"
         
-        return f"Result of {operation}:
-{result.to_string()}"
+        return f"Result of {operation}: {result.to_string()}"
     except Exception as e:
         return f"Error in spreadsheet analysis: {str(e)}"
 
