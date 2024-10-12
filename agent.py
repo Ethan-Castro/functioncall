@@ -174,5 +174,4 @@ if st.button("Submit Query"):
         response = run_full_turn(math_agent, messages)
         math_agent = Agent(**response.agent)
         messages.extend(response.messages)
-if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+
