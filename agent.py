@@ -14,7 +14,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Use Streamlit secrets to get OpenAI API key
-api_key = st.secrets["OPENAI_API_KEY"]
+api_key = st.secrets["api_key"]
 
 # Securely set your OpenAI API key
 if api_key:
