@@ -182,7 +182,7 @@ if uploaded_file is not None:
                     messages=[{"role": "user", "content": llm_prompt}],
                     max_tokens=150
                 )
-                custom_function = llm_response.choices[0].message['content'].strip()
+                custom_function = llm_response.choices[0].message.content.strip()
                 st.write("Generated code:")
                 st.code(custom_function, language='python')
         if st.button("Analyze Spreadsheet"):
