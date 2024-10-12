@@ -172,8 +172,7 @@ if uploaded_file is not None:
         operation = st.selectbox("Select an operation to perform on the spreadsheet", ["sum", "mean", "describe", "custom"])
         custom_function = None
         if operation == "custom":
-            custom_function = st.text_area("Enter your custom Python code to operate on the dataframe.
-Use 'df' to reference the dataframe and assign the result to 'result' variable.")
+            custom_function = st.text_area("Enter your custom Python code to operate on the dataframe. Use 'df' to reference the dataframe and assign the result to 'result' variable.")
         if st.button("Analyze Spreadsheet"):
             result = analyze_spreadsheet(operation, uploaded_file.getvalue().decode("utf-8"), custom_function)
             st.write(result)
