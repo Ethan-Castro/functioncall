@@ -1,5 +1,4 @@
-!pip install openai
-import openai as 
+import openai as OpenAI
 from pydantic import BaseModel
 from typing import Optional
 import json
