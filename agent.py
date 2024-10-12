@@ -9,11 +9,19 @@ import io  # Needed to handle string-based CSV
 import os
 from flask import Flask, request, jsonify
 
-# Securely set your OpenAI API key (use environment variables or other secure methods)
-api_key = os.getenv("OPENAI_API_KEY", "YOUR_OPENAI_API_KEY")
+# Load environment variables
+load_dotenv()
 
-client = openai.OpenAI(api_key=api_key)
-openai.api_key = api_key
+# Use Streamlit secrets to get OpenAI API key
+api_key = st.secrets["api_key"]
+
+# Securely set your OpenAI API key
+if api_key:
+    client = openai.OpenAI(api_key=api_key)
+    openai.api_key = api_key
+else:
+    st.warning("Please configure your OpenAI API key in Streamlit secrets to proceed.")
+
 
 class Agent(BaseModel):
     name: str = "Agent"
@@ -88,8 +96,7 @@ def analyze_spreadsheet(operation: str, data: str):
         else:
             return f"Unsupported operation: {operation}"
         
-        return f"Result of {operation}:
-{result.to_string()}"
+        return f"Result of {operation}: {result.to_string()}"
     except Exception as e:
         return f"Error in spreadsheet analysis: {str(e)}"
 
