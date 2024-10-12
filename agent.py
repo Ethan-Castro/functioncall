@@ -176,5 +176,5 @@ if st.button("Submit Query"):
             messages = []
         messages.append({"role": "user", "content": user_query})
         response = run_full_turn(math_agent, messages)
-        math_agent = Agent(**response.agent)
+        math_agent = Agent.parse_obj(response.agent)
         messages.extend(response.messages)
