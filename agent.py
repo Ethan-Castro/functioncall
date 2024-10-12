@@ -175,7 +175,7 @@ if uploaded_file is not None:
         if operation == "custom":
             custom_function = None
         if operation == "custom":
-            llm_prompt = "Generate Python code to perform the following operation on the given dataframe: " + st.text_input("Describe the analysis you want to perform on the dataframe:")
+            llm_prompt = "ONLY generate Python code to perform the following operation on the given dataframe, there should only be python code to run: " + st.text_input("Describe the analysis you want to perform on the dataframe:")
             if llm_prompt:
                 llm_response = openai.chat.completions.create(
                     model="gpt-4o",
