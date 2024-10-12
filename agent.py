@@ -81,13 +81,21 @@ def perform_calculation(expression: str):
     except Exception as e:
         return f"Error in calculation: {str(e)}"
 
-def analyze_spreadsheet(operation: str, data: str):
+def analyze_spreadsheet(operation: str, data: str, custom_function: Optional[str] = None):
     """Perform spreadsheet operations using pandas."""
     try:
         # Convert string data to DataFrame
         df = pd.read_csv(io.StringIO(data))  # Using io.StringIO to convert string to file-like object
         
-        if operation == "sum":
+        if custom_function:
+            try:
+                # Execute custom Python code using eval to perform operations on the dataframe
+                local_vars = {'df': df}
+                exec(custom_function, {}, local_vars)
+                result = local_vars.get('result', 'No result variable defined in custom function.')
+            except Exception as e:
+                return f"Error executing custom function: {str(e)}"
+        elif operation == "sum":
             result = df.sum()
         elif operation == "mean":
             result = df.mean()
@@ -102,28 +110,29 @@ def analyze_spreadsheet(operation: str, data: str):
 
 math_agent = Agent(
     name="Math and Spreadsheet Agent",
+    model="gpt-4o-mini",
     instructions=(
         "You are a math and spreadsheet analysis agent. "
         "When you detect a mathematical expression or spreadsheet-related query, "
         "use the appropriate function to perform calculations or analysis. "
         "For spreadsheets, assume the data is in CSV format."
     ),
-    tools=[perform_calculation, analyze_spreadsheet]
+    tools=["perform_calculation", "analyze_spreadsheet"]
 )
 
 def run_full_turn(agent, messages):
     current_agent = agent
     num_init_messages = len(messages)
-    messages = messages.copy()
+    messages = messages.copy() if 'messages' in globals() else []
 
     while True:
         tool_schemas = [function_to_schema(tool) for tool in current_agent.tools]
         tools = {tool.__name__: tool for tool in current_agent.tools}
 
-        response = client.chat.completions.create(
-            model=agent.model,
+        response = openai.ChatCompletion.create(
+            model=current_agent.model,
             messages=[{"role": "system", "content": current_agent.instructions}] + messages,
-            functions=tool_schemas or None,  # Use 'functions' instead of 'tools'
+            functions=tool_schemas or None,
         )
         message = response.choices[0].message  # Access the message in the response object
         messages.append(message)
@@ -148,8 +157,6 @@ def run_full_turn(agent, messages):
     return Response(agent=current_agent.dict(), messages=messages[num_init_messages:])
 
 # Streamlit app
-# Streamlit app
-# Streamlit app
 st.title("Math and Spreadsheet Analysis Agent")
 
 st.write("Welcome! You can ask me to perform calculations or analyze a spreadsheet (in CSV format).")
@@ -162,9 +169,13 @@ if uploaded_file is not None:
         st.write("Dataframe Preview:")
         st.dataframe(df)
 
-        operation = st.selectbox("Select an operation to perform on the spreadsheet", ["sum", "mean", "describe"])
+        operation = st.selectbox("Select an operation to perform on the spreadsheet", ["sum", "mean", "describe", "custom"])
+        custom_function = None
+        if operation == "custom":
+            custom_function = st.text_area("Enter your custom Python code to operate on the dataframe.
+Use 'df' to reference the dataframe and assign the result to 'result' variable.")
         if st.button("Analyze Spreadsheet"):
-            result = analyze_spreadsheet(operation, uploaded_file.getvalue().decode("utf-8"))
+            result = analyze_spreadsheet(operation, uploaded_file.getvalue().decode("utf-8"), custom_function)
             st.write(result)
     except Exception as e:
         st.error(f"Error reading file: {str(e)}")
