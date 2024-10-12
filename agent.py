@@ -148,6 +148,7 @@ def run_full_turn(agent, messages):
     return Response(agent=current_agent.dict(), messages=messages[num_init_messages:])
 
 # Streamlit app
+# Streamlit app
 st.title("Math and Spreadsheet Analysis Agent")
 
 st.write("Welcome! You can ask me to perform calculations or analyze a spreadsheet (in CSV format).")
@@ -170,8 +171,9 @@ if uploaded_file is not None:
 user_query = st.text_input("Enter a mathematical expression or a query:")
 if st.button("Submit Query"):
     if user_query:
-        messages.append({"role": "user", "content": user_query})
+        if 'messages' not in globals():
+    messages = []
+messages.append({"role": "user", "content": user_query})
         response = run_full_turn(math_agent, messages)
         math_agent = Agent(**response.agent)
         messages.extend(response.messages)
-
